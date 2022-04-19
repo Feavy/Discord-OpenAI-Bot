@@ -49,7 +49,7 @@ jobs:
         run: ssh myvm "sudo pkill -f 'java -jar /openai/discord-openai-bot-1.0-SNAPSHOT-all.jar'"
       - name: Upload jar on myvm VM
         run: |
-          ssh myvm 'echo "export OPENAI_DISCORD_TOKEN=${{ secrets.BOT_TOKEN }};export OPENAI_TOKEN=${{ secrets.OPENAI_TOKEN }};/usr/bin/java -jar /openai/discord-openai-bot-1.0-SNAPSHOT-all.jar  >> /openai/log.txt 2>> /openai/log.txt" > /openai/run.sh'
+          ssh myvm 'echo "export OPENAI_DISCORD_TOKEN=${{ secrets.BOT_TOKEN }};export OPENAI_TOKEN=\"${{ secrets.OPENAI_TOKEN }}\";/usr/bin/java -jar /openai/discord-openai-bot-1.0-SNAPSHOT-all.jar  >> /openai/log.txt 2>> /openai/log.txt" > /openai/run.sh'
           ssh myvm 'chmod 700 /openai/run.sh'
           scp build/libs/discord-openai-bot-1.0-SNAPSHOT-all.jar myvm:/openai
       - name: Start the bot
