@@ -11,7 +11,7 @@ public class Main {
     public static String token;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
-        token = System.getenv("OPENAI_DISCORD_TOKEN");
+        token = System.getenv("BOT_TOKEN");
         api = JDABuilder.create(token, GatewayIntent.GUILD_MESSAGES).build();
         api.awaitReady();
 

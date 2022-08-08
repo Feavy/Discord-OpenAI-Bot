@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: discord-openai-secret
+  namespace: feavy
+type: Opaque
+stringData:
+  BOT_TOKEN: ${BOT_TOKEN}
+  OPENAI_TOKEN: ${OPENAI_TOKEN}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discord-openai
+  namespace: feavy
+  labels:
+    k8s-app: discord-openai
+spec:
+  selector:
+    matchLabels:
+      k8s-app: discord-openai
+  template:
+    metadata:
+      labels:
+        k8s-app: discord-openai
+        name: discord-openai
+    spec:
+      containers:
+        - name: discord-openai
+          image: ${DOCKER_IMAGE}
+          envFrom:
+            - secretRef:
+                name: discord-openai-secret
+          imagePullPolicy: Always
+      imagePullSecrets:
+        - name: regcred
+      nodeSelector:
+        kubernetes.io/hostname: 'feavy'
