@@ -35,7 +35,7 @@ public class OpenAIClient {
 //                        """.formatted(input.replaceAll("\n", "\\\\n")));
 //        System.out.println(">>>");
 
-        HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.openai.com/v1/engines/text-davinci-002/completions"))
+        HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.openai.com/v1/engines/"+Settings.ENGINE+"/completions"))
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .POST(HttpRequest.BodyPublishers.ofString("""

@@ -16,5 +16,7 @@ public class Main {
         api.awaitReady();
 
         api.addEventListener(new OpenAIService());
+
+        System.out.println("OpenAI bot ready. Engine="+Settings.ENGINE);
     }
 }
