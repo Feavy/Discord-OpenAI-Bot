@@ -24,7 +24,7 @@ public class OpenAIService extends ListenerAdapter {
             return;
         }
         OpenAIClient openai = openAiByGuild.get(event.getGuild().getId());
-        if(openai == null) {
+        if (openai == null) {
             return;
         }
         String contentRaw = format(event.getMessage().getContentRaw());
@@ -34,10 +34,13 @@ public class OpenAIService extends ListenerAdapter {
         UserAIConv conv = convs.computeIfAbsent(author.getId(), (k -> new UserAIConv()));
 
         if (lastMessage == null || conv.getLastBotMessage() == null || !lastMessage.getId().equals(conv.getLastBotMessage().getId())) {
-            if (!contentRaw.endsWith("??")) {
+            if (contentRaw.endsWith("??")) {
+                contentRaw = contentRaw.substring(0, contentRaw.length() - 1);
+            } else if (contentRaw.startsWith("!ai")) {
+                contentRaw = contentRaw.substring(3)+"\n\n";
+            } else {
                 return;
             }
-            contentRaw = contentRaw.substring(0, contentRaw.length()-1);
             conv.setText(contentRaw);
         } else {
             conv.addLine(contentRaw);
