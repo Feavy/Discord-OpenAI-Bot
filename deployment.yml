@@ -7,7 +7,7 @@ type: Opaque
 stringData:
   BOT_TOKEN: ${BOT_TOKEN}
   OPENAI_TOKEN: ${OPENAI_TOKEN}
-  MODEL: "text-davinci-003"
+  ENGINE: "text-davinci-003"
 ---
 apiVersion: apps/v1
 kind: Deployment
