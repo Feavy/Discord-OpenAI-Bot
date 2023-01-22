@@ -21,6 +21,7 @@ public class OpenAIClient {
     }
 
     public CompletableFuture<String> complete(String input) {
+//        System.out.println("COMPLETE: "+input);
 //        System.out.println(">>>");
 //        System.out.println("""
 //                        {
@@ -66,7 +67,9 @@ public class OpenAIClient {
 //            System.out.println("<<<");
 
             JSONArray choices = new JSONObject(response).getJSONArray("choices");
-            return format(choices.getJSONObject(0).getString("text"));
+            String completed = format(choices.getJSONObject(0).getString("text"));
+//            System.out.println("COMPLETED: "+completed);
+            return completed;
         }, executor);
     }
 

@@ -15,47 +15,53 @@ import static fr.feavy.openai_discord_bot.OpenAIClient.format;
 public class OpenAIService extends ListenerAdapter {
     private final Map<String, OpenAIClient> openAiByGuild = makeClients(System.getenv("OPENAI_TOKEN"));
 
-    private final Map<String, UserAIConv> convs = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, Conversation> cachedConversations = Collections.synchronizedMap(new HashMap<>());
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         User author = event.getAuthor();
-        if (author.isBot()) {
-            return;
-        }
+        if (author.isBot()) return;
+
         OpenAIClient openai = openAiByGuild.get(event.getGuild().getId());
-        if (openai == null) {
-            return;
-        }
+        if (openai == null) return;
+
         String contentRaw = format(event.getMessage().getContentRaw());
 
-        Message lastMessage = event.getMessage().getReferencedMessage();
+        Message referencedMessage = event.getMessage().getReferencedMessage();
 
-        UserAIConv conv = convs.computeIfAbsent(author.getId(), (k -> new UserAIConv()));
+        Conversation conv = cachedConversations.computeIfAbsent(author.getId(), (k -> new Conversation()));
 
-        if (lastMessage == null || conv.getLastBotMessage() == null || !lastMessage.getId().equals(conv.getLastBotMessage().getId())) {
-            if (contentRaw.endsWith("??")) {
-                contentRaw = contentRaw.substring(0, contentRaw.length() - 1);
-            } else if (contentRaw.startsWith("!ai")) {
-                contentRaw = contentRaw.substring(3)+"\n\n";
+        if(referencedMessage == null) {
+            if (contentRaw.startsWith("!ai") || contentRaw.endsWith("??")) {
+                // New conversation
+                conv = new Conversation();
+                conv.addMessage(event.getMessage());
+            }else{
+                return;
+            }
+        } else {
+            if(conv.hasMessage(referencedMessage)) {
+                // Reply to the user cached conversation
+                conv.setLastMessageAfter(referencedMessage, event.getMessage());
+            } else if(referencedMessage.getAuthor().getId().equals("959430211227750430")) {
+                // Reply to OpenAI
+                conv = Conversation.fromMessage(event.getMessage());
             } else {
                 return;
             }
-            conv.setText(contentRaw);
-        } else {
-            conv.addLine(contentRaw);
         }
 
+        cachedConversations.put(author.getId(), conv);
+
         try {
+            Conversation finalConv = conv;
             openai.complete(conv.text()).thenAccept(completed -> {
                 try {
                     if (completed == null)
                         return;
-                    String previousText = conv.text();
-                    conv.setText(completed);
+                    String previousText = finalConv.text();
                     completed = completed.replace(previousText, "");
-                    event.getMessage().reply(completed).queue(conv::setLastBotMessage);
-
+                    event.getMessage().reply(completed).queue(finalConv::addMessage);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
