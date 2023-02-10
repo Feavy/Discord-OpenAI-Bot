@@ -44,6 +44,7 @@ jobs:
           DEPLOYMENT: deployment.yml
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
+          PLATFORM: arm64
 
       - name: Restart deployment
         run: kubectl rollout restart deployment discord-openai --namespace feavy
