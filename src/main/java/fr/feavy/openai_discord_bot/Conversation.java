@@ -5,11 +5,10 @@ import net.dv8tion.jda.api.entities.MessageReference;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class Conversation {
     private final List<Message> messages = new ArrayList<>();
-    private final List<String> messagesStr = new ArrayList<>();
+    private final List<ChatMessage> conversation = new ArrayList<>();
 
     public Conversation() {
     }
@@ -20,30 +19,25 @@ public class Conversation {
 
     public void addMessage(Message message) {
         messages.add(message);
-        messagesStr.add(format(message.getContentRaw()));
+        conversation.add(ChatMessage.from(message));
     }
 
     public void addMessage(int index, Message message) {
         messages.add(index, message);
-        messagesStr.add(index, format(message.getContentRaw()));
+        conversation.add(index, ChatMessage.from(message));
     }
 
     public void setLastMessageAfter(Message referencedMessage, Message message) {
         int index = messages.indexOf(referencedMessage);
         messages.add(index + 1, message);
-        messagesStr.add(index + 1, format(message.getContentRaw()));
+        conversation.add(index + 1, ChatMessage.from(message));
         // removes all messages after the new one
         messages.subList(index + 2, messages.size()).clear();
-        messagesStr.subList(index + 2, messagesStr.size()).clear();
+        conversation.subList(index + 2, conversation.size()).clear();
     }
 
-    public String text() {
-        return String.join("\n\n", messagesStr) + "\n\n";
-    }
-
-    @Override
-    public String toString() {
-        return text();
+    public List<ChatMessage> getMessages() {
+        return conversation;
     }
 
     public static Conversation fromMessage(Message message) {
@@ -62,14 +56,5 @@ public class Conversation {
             }
         } while (message != null);
         return conv;
-    }
-
-    private static String format(String contentRaw) {
-        if (contentRaw.endsWith("??")) {
-            contentRaw = contentRaw.substring(0, contentRaw.length() - 1);
-        } else if (contentRaw.startsWith("!ai")) {
-            contentRaw = contentRaw.substring(3);
-        }
-        return contentRaw;
     }
 }

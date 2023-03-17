@@ -55,12 +55,10 @@ public class OpenAIService extends ListenerAdapter {
 
         try {
             Conversation finalConv = conv;
-            openai.complete(conv.text()).thenAccept(completed -> {
+            openai.complete(conv).thenAccept(completed -> {
                 try {
                     if (completed == null)
                         return;
-                    String previousText = finalConv.text();
-                    completed = completed.replace(previousText, "");
                     event.getMessage().reply(completed).queue(finalConv::addMessage);
                 } catch (Exception e) {
                     e.printStackTrace();

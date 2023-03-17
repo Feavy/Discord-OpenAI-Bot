@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class OpenAIClient {
     public final String token;
@@ -20,36 +21,28 @@ public class OpenAIClient {
         this.token = token;
     }
 
-    public CompletableFuture<String> complete(String input) {
-//        System.out.println("COMPLETE: "+input);
-//        System.out.println(">>>");
-//        System.out.println("""
-//                        {
-//                            "prompt": "%s",
-//                            "echo": true,
-//                            "temperature": 0.7,
-//                            "max_tokens": 256,
-//                            "top_p": 1,
-//                            "frequency_penalty": 0,
-//                            "presence_penalty": 0
-//                        }
-//                        """.formatted(input.replaceAll("\n", "\\\\n")));
-//        System.out.println(">>>");
+    public CompletableFuture<String> complete(Conversation conversation) {
+        String messages = new JSONArray(conversation.getMessages().stream().map(this::toJsonObject).collect(Collectors.toList())).toString();
 
-        HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.openai.com/v1/engines/"+Settings.ENGINE+"/completions"))
+        System.out.println("COMPLETE: "+ conversation);
+        System.out.println(">>>");
+        System.out.println("""
+                        {
+                            "model": "%s",
+                            "messages": %s
+                        }
+                        """.formatted(Settings.ENGINE, messages));
+        System.out.println(">>>");
+
+        HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.openai.com/v1/chat/completions"))
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .POST(HttpRequest.BodyPublishers.ofString("""
                         {
-                            "prompt": "%s",
-                            "echo": true,
-                            "temperature": 0.7,
-                            "max_tokens": 256,
-                            "top_p": 1,
-                            "frequency_penalty": 0,
-                            "presence_penalty": 0
+                            "model": "%s",
+                            "messages": %s
                         }
-                        """.formatted(input.replaceAll("\n", "\\\\n").replaceAll("\"", "\\\\\"")))).build();
+                        """.formatted(Settings.ENGINE, messages))).build();
 
         return CompletableFuture.supplyAsync(() -> {
             HttpResponse<String> httpResponse = null;
@@ -62,15 +55,22 @@ public class OpenAIClient {
 
             String response = httpResponse.body();
 
-//            System.out.println("<<<");
-//            System.out.println(response);
-//            System.out.println("<<<");
+            System.out.println("<<<");
+            System.out.println(response);
+            System.out.println("<<<");
 
             JSONArray choices = new JSONObject(response).getJSONArray("choices");
-            String completed = format(choices.getJSONObject(0).getString("text"));
+            String completed = format(choices.getJSONObject(0).getJSONObject("message").getString("content"));
 //            System.out.println("COMPLETED: "+completed);
             return completed;
         }, executor);
+    }
+
+    private JSONObject toJsonObject(ChatMessage chatMessage) {
+        JSONObject obj = new JSONObject();
+        obj.put("role", chatMessage.role);
+        obj.put("content", chatMessage.content);
+        return obj;
     }
 
     public static String format(String input) {
