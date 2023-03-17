@@ -8,6 +8,7 @@ stringData:
   BOT_TOKEN: ${BOT_TOKEN}
   OPENAI_TOKEN: ${OPENAI_TOKEN}
   ENGINE: "gpt-4"
+  MAX_TOKENS: "600"
 ---
 apiVersion: apps/v1
 kind: Deployment

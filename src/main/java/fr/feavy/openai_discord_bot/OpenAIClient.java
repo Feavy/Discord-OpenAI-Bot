@@ -29,9 +29,10 @@ public class OpenAIClient {
         System.out.println("""
                         {
                             "model": "%s",
-                            "messages": %s
+                            "messages": %s,
+                            "max_tokens": %d
                         }
-                        """.formatted(Settings.ENGINE, messages));
+                        """.formatted(Settings.ENGINE, messages, Settings.MAX_TOKENS));
         System.out.println(">>>");
 
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.openai.com/v1/chat/completions"))
@@ -40,9 +41,10 @@ public class OpenAIClient {
                 .POST(HttpRequest.BodyPublishers.ofString("""
                         {
                             "model": "%s",
-                            "messages": %s
+                            "messages": %s,
+                            "max_tokens": %d
                         }
-                        """.formatted(Settings.ENGINE, messages))).build();
+                        """.formatted(Settings.ENGINE, messages, Settings.MAX_TOKENS))).build();
 
         return CompletableFuture.supplyAsync(() -> {
             HttpResponse<String> httpResponse = null;
