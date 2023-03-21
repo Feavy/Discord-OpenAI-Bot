@@ -13,7 +13,7 @@ import java.util.Map;
 import static fr.feavy.openai_discord_bot.OpenAIClient.format;
 
 public class OpenAIService extends ListenerAdapter {
-    private final Map<String, OpenAIClient> openAiByGuild = makeClients(System.getenv("OPENAI_TOKEN"));
+    private final OpenAIClient openai = new OpenAIClient(Settings.OPENAI_API_KEY);
 
     private final Map<String, Conversation> cachedConversations = Collections.synchronizedMap(new HashMap<>());
 
@@ -22,8 +22,8 @@ public class OpenAIService extends ListenerAdapter {
         User author = event.getAuthor();
         if (author.isBot()) return;
 
-        OpenAIClient openai = openAiByGuild.get(event.getGuild().getId());
-        if (openai == null) return;
+        if(!Settings.ALLOWED_GUILDS.contains(event.getGuild().getId()))
+            return;
 
         String contentRaw = format(event.getMessage().getContentRaw());
 
@@ -67,17 +67,5 @@ public class OpenAIService extends ListenerAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static Map<String, OpenAIClient> makeClients(String tokenEnv) {
-        Map<String, OpenAIClient> clients = new HashMap<>();
-        String[] entries = tokenEnv.split("\n");
-        for (String entry : entries) {
-            String[] split = entry.split("=");
-            String guildId = split[0];
-            String openAiToken = split[1];
-            clients.put(guildId, new OpenAIClient(openAiToken));
-        }
-        return clients;
     }
 }

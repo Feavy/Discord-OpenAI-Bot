@@ -6,9 +6,10 @@ metadata:
 type: Opaque
 stringData:
   BOT_TOKEN: ${BOT_TOKEN}
-  OPENAI_TOKEN: ${OPENAI_TOKEN}
+  OPENAI_API_KEY: ${OPENAI_API_KEY}
+  ALLOWED_GUILDS: ${ALLOWED_GUILDS}
   ENGINE: "gpt-4"
-  MAX_TOKENS: "600"
+  MAX_TOKENS: "300"
 ---
 apiVersion: apps/v1
 kind: Deployment

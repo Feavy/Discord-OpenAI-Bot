@@ -76,6 +76,6 @@ public class OpenAIClient {
     }
 
     public static String format(String input) {
-        return input.replaceAll("<[^>]+>", "").replaceAll("\\t", "\t").replaceAll("\\n", "\n");
+        return input.replaceAll("\\t", "\t").replaceAll("\\n", "\n");
     }
 }

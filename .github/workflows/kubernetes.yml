@@ -43,7 +43,8 @@ jobs:
           DOCKER_IMAGE: discord-openai:latest
           DEPLOYMENT: deployment.yml
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ALLOWED_GUILDS: ${{ secrets.ALLOWED_GUILDS }}
           PLATFORM: arm64
 
       - name: Restart deployment
