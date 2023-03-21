@@ -24,16 +24,16 @@ public class OpenAIClient {
     public CompletableFuture<String> complete(Conversation conversation) {
         String messages = new JSONArray(conversation.getMessages().stream().map(this::toJsonObject).collect(Collectors.toList())).toString();
 
-        System.out.println("COMPLETE: "+ conversation);
-        System.out.println(">>>");
-        System.out.println("""
-                        {
-                            "model": "%s",
-                            "messages": %s,
-                            "max_tokens": %d
-                        }
-                        """.formatted(Settings.ENGINE, messages, Settings.MAX_TOKENS));
-        System.out.println(">>>");
+//        System.out.println("COMPLETE: "+ conversation);
+//        System.out.println(">>>");
+//        System.out.println("""
+//                        {
+//                            "model": "%s",
+//                            "messages": %s,
+//                            "max_tokens": %d
+//                        }
+//                        """.formatted(Settings.ENGINE, messages, Settings.MAX_TOKENS));
+//        System.out.println(">>>");
 
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.openai.com/v1/chat/completions"))
                 .header("Content-Type", "application/json")
@@ -57,9 +57,9 @@ public class OpenAIClient {
 
             String response = httpResponse.body();
 
-            System.out.println("<<<");
-            System.out.println(response);
-            System.out.println("<<<");
+//            System.out.println("<<<");
+//            System.out.println(response);
+//            System.out.println("<<<");
 
             JSONArray choices = new JSONObject(response).getJSONArray("choices");
             String completed = format(choices.getJSONObject(0).getJSONObject("message").getString("content"));
