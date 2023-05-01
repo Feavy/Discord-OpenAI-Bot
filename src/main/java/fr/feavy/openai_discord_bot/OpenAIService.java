@@ -25,7 +25,17 @@ public class OpenAIService extends ListenerAdapter {
         if(!Settings.ALLOWED_GUILDS.contains(event.getGuild().getId()))
             return;
 
+        CompletionEngine engine = Settings.ENGINE;
+
         String contentRaw = format(event.getMessage().getContentRaw());
+
+        for(CompletionEngine e : CompletionEngine.values()) {
+            if(contentRaw.toLowerCase().endsWith("["+e.name.toLowerCase()+"]")) {
+                contentRaw = contentRaw.substring(0, contentRaw.length() - e.name.length() - 2);
+                engine = e;
+                break;
+            }
+        }
 
         Message referencedMessage = event.getMessage().getReferencedMessage();
 
@@ -55,11 +65,20 @@ public class OpenAIService extends ListenerAdapter {
 
         try {
             Conversation finalConv = conv;
-            openai.complete(conv).thenAccept(completed -> {
+            CompletionEngine finalEngine = engine;
+            openai.complete(conv, engine).thenAccept(completed -> {
                 try {
                     if (completed == null)
                         return;
-                    event.getMessage().reply(completed).queue(finalConv::addMessage);
+
+                    if(finalEngine.isChatBot) {
+                        event.getMessage().reply(completed).queue(finalConv::addMessage);
+                    } else {
+                        String previousText = finalConv.toString();
+                        completed = completed.replace(previousText, "");
+                        event.getMessage().reply(completed).queue(finalConv::addMessage);
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

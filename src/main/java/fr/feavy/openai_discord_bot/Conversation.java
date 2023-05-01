@@ -2,9 +2,12 @@ package fr.feavy.openai_discord_bot;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReference;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Conversation {
     private final List<Message> messages = new ArrayList<>();
@@ -38,6 +41,15 @@ public class Conversation {
 
     public List<ChatMessage> getMessages() {
         return conversation;
+    }
+
+    public JSONArray toJson() {
+        return new JSONArray(this.getMessages().stream().map(ChatMessage::toJsonObject).collect(Collectors.toList()));
+    }
+
+    @Override
+    public String toString() {
+        return String.join("\n\n", conversation.stream().map(it -> it.content).toList()) + "\n\n";
     }
 
     public static Conversation fromMessage(Message message) {

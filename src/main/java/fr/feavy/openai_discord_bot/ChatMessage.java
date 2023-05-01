@@ -1,6 +1,7 @@
 package fr.feavy.openai_discord_bot;
 
 import net.dv8tion.jda.api.entities.Message;
+import org.json.JSONObject;
 
 public class ChatMessage {
     public String role;
@@ -14,6 +15,13 @@ public class ChatMessage {
     public static ChatMessage from(Message message) {
         String role = message.getAuthor().isBot() ? "assistant" : "user";
         return new ChatMessage(role, format(message.getContentRaw()));
+    }
+
+    public JSONObject toJsonObject() {
+        JSONObject obj = new JSONObject();
+        obj.put("role", this.role);
+        obj.put("content", this.content);
+        return obj;
     }
 
     private static String format(String contentRaw) {
