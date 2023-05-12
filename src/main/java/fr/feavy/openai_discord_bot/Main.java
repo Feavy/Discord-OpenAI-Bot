@@ -10,9 +10,9 @@ public class Main {
     public static JDA api;
     public static String token;
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         token = System.getenv("BOT_TOKEN");
-        api = JDABuilder.create(token, GatewayIntent.GUILD_MESSAGES).build();
+        api = JDABuilder.create(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT).build();
         api.awaitReady();
 
         api.addEventListener(new OpenAIService());

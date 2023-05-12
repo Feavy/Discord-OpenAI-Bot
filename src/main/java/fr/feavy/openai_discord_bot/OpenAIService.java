@@ -72,11 +72,11 @@ public class OpenAIService extends ListenerAdapter {
                         return;
 
                     if(finalEngine.isChatBot) {
-                        event.getMessage().reply(completed).queue(finalConv::addMessage);
+                        event.getMessage().reply(completed).queue(finalConv::addMessage, Throwable::printStackTrace);
                     } else {
                         String previousText = finalConv.toString();
                         completed = completed.replace(previousText, "");
-                        event.getMessage().reply(completed).queue(finalConv::addMessage);
+                        event.getMessage().reply(completed).queue(finalConv::addMessage, Throwable::printStackTrace);
                     }
 
                 } catch (Exception e) {
