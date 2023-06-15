@@ -10,7 +10,6 @@ import fr.feavy.simpleopenai.Conversation;
 
 public class DiscordConversation extends Conversation {
     private final List<Message> messages = new ArrayList<>();
-    private final List<DiscordChatMessage> conversation = new ArrayList<>();
 
     public DiscordConversation() {
     }
