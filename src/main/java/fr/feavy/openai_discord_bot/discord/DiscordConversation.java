@@ -1,19 +1,18 @@
-package fr.feavy.openai_discord_bot;
+package fr.feavy.openai_discord_bot.discord;
 
+import fr.feavy.openai_discord_bot.openai.ChatMessage;
+import fr.feavy.openai_discord_bot.openai.Conversation;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReference;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class Conversation {
+public class DiscordConversation extends Conversation {
     private final List<Message> messages = new ArrayList<>();
-    private final List<ChatMessage> conversation = new ArrayList<>();
+    private final List<DiscordChatMessage> conversation = new ArrayList<>();
 
-    public Conversation() {
+    public DiscordConversation() {
     }
 
     public boolean hasMessage(Message referencedMessage) {
@@ -22,39 +21,26 @@ public class Conversation {
 
     public void addMessage(Message message) {
         messages.add(message);
-        conversation.add(ChatMessage.from(message));
+        conversation.add(DiscordChatMessage.from(message));
     }
 
     public void addMessage(int index, Message message) {
         messages.add(index, message);
-        conversation.add(index, ChatMessage.from(message));
+        conversation.add(index, DiscordChatMessage.from(message));
     }
 
     public void setLastMessageAfter(Message referencedMessage, Message message) {
         int index = messages.indexOf(referencedMessage);
         messages.add(index + 1, message);
-        conversation.add(index + 1, ChatMessage.from(message));
+        conversation.add(index + 1, DiscordChatMessage.from(message));
         // removes all messages after the new one
         messages.subList(index + 2, messages.size()).clear();
         conversation.subList(index + 2, conversation.size()).clear();
     }
 
-    public List<ChatMessage> getMessages() {
-        return conversation;
-    }
-
-    public JSONArray toJson() {
-        return new JSONArray(this.getMessages().stream().map(ChatMessage::toJsonObject).collect(Collectors.toList()));
-    }
-
-    @Override
-    public String toString() {
-        return String.join("\n\n", conversation.stream().map(it -> it.content).toList()) + "\n\n";
-    }
-
-    public static Conversation fromMessage(Message message) {
+    public static DiscordConversation fromMessage(Message message) {
         System.out.println("Creating conversation from message");
-        Conversation conv = new Conversation();
+        DiscordConversation conv = new DiscordConversation();
         MessageReference reference;
         do {
             conv.addMessage(0, message);

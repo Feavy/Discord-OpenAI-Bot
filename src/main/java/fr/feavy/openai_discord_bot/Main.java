@@ -1,10 +1,9 @@
 package fr.feavy.openai_discord_bot;
 
+import fr.feavy.openai_discord_bot.discord.DiscordMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-
-import javax.security.auth.login.LoginException;
 
 public class Main {
     public static JDA api;
@@ -15,7 +14,7 @@ public class Main {
         api = JDABuilder.create(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT).build();
         api.awaitReady();
 
-        api.addEventListener(new OpenAIService());
+        api.addEventListener(new DiscordMessageListener());
 
         System.out.println("OpenAI bot ready. Engine="+Settings.ENGINE);
     }

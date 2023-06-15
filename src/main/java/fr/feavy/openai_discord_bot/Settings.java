@@ -1,5 +1,7 @@
 package fr.feavy.openai_discord_bot;
 
+import fr.feavy.openai_discord_bot.openai.CompletionEngine;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package fr.feavy.openai_discord_bot;
+package fr.feavy.openai_discord_bot.openai;
 
 public enum CompletionEngine {
     DAVINCI("gpt3", "text-davinci-003", false),

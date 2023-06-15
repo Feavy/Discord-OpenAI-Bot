@@ -1,5 +1,6 @@
-package fr.feavy.openai_discord_bot;
+package fr.feavy.openai_discord_bot.openai;
 
+import fr.feavy.openai_discord_bot.Settings;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,7 +27,7 @@ public class OpenAIClient {
         return engine.isChatBot ? completeChatBot(conversation, engine.engineName) : completeClassic(conversation, engine.engineName);
     }
 
-    public CompletableFuture<String> completeChatBot(Conversation conversation, String engineName) {
+    private CompletableFuture<String> completeChatBot(Conversation conversation, String engineName) {
         String messages = conversation.toJson().toString();
 
 //        System.out.println("COMPLETE: "+ conversation);
@@ -73,7 +74,7 @@ public class OpenAIClient {
         }, executor);
     }
 
-    public CompletableFuture<String> completeClassic(Conversation conversation, String engineName) {
+    private CompletableFuture<String> completeClassic(Conversation conversation, String engineName) {
         String input = conversation.toString();
 //        System.out.println("COMPLETE: "+input);
 //        System.out.println(">>>");

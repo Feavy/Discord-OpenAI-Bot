@@ -1,5 +1,9 @@
-package fr.feavy.openai_discord_bot;
+package fr.feavy.openai_discord_bot.discord;
 
+import fr.feavy.openai_discord_bot.Settings;
+import fr.feavy.openai_discord_bot.discord.DiscordConversation;
+import fr.feavy.openai_discord_bot.openai.CompletionEngine;
+import fr.feavy.openai_discord_bot.openai.OpenAIClient;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -10,12 +14,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static fr.feavy.openai_discord_bot.OpenAIClient.format;
+import static fr.feavy.openai_discord_bot.openai.OpenAIClient.format;
 
-public class OpenAIService extends ListenerAdapter {
+public class DiscordMessageListener extends ListenerAdapter {
     private final OpenAIClient openai = new OpenAIClient(Settings.OPENAI_API_KEY);
 
-    private final Map<String, Conversation> cachedConversations = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, DiscordConversation> cachedConversations = Collections.synchronizedMap(new HashMap<>());
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
@@ -39,12 +43,12 @@ public class OpenAIService extends ListenerAdapter {
 
         Message referencedMessage = event.getMessage().getReferencedMessage();
 
-        Conversation conv = cachedConversations.computeIfAbsent(author.getId(), (k -> new Conversation()));
+        DiscordConversation conv = cachedConversations.computeIfAbsent(author.getId(), (k -> new DiscordConversation()));
 
         if(referencedMessage == null) {
             if (contentRaw.startsWith("!ai") || contentRaw.endsWith("??")) {
                 // New conversation
-                conv = new Conversation();
+                conv = new DiscordConversation();
                 conv.addMessage(event.getMessage());
             }else{
                 return;
@@ -55,7 +59,7 @@ public class OpenAIService extends ListenerAdapter {
                 conv.setLastMessageAfter(referencedMessage, event.getMessage());
             } else if(referencedMessage.getAuthor().getId().equals("959430211227750430")) {
                 // Reply to OpenAI
-                conv = Conversation.fromMessage(event.getMessage());
+                conv = DiscordConversation.fromMessage(event.getMessage());
             } else {
                 return;
             }
@@ -64,7 +68,7 @@ public class OpenAIService extends ListenerAdapter {
         cachedConversations.put(author.getId(), conv);
 
         try {
-            Conversation finalConv = conv;
+            DiscordConversation finalConv = conv;
             CompletionEngine finalEngine = engine;
             openai.complete(conv, engine).thenAccept(completed -> {
                 try {
