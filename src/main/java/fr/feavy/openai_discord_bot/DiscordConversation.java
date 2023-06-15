@@ -1,12 +1,12 @@
-package fr.feavy.openai_discord_bot.discord;
+package fr.feavy.openai_discord_bot;
 
-import fr.feavy.openai_discord_bot.openai.ChatMessage;
-import fr.feavy.openai_discord_bot.openai.Conversation;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.feavy.simpleopenai.Conversation;
 
 public class DiscordConversation extends Conversation {
     private final List<Message> messages = new ArrayList<>();

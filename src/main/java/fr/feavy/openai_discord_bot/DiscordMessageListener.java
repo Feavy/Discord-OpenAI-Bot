@@ -1,9 +1,5 @@
-package fr.feavy.openai_discord_bot.discord;
+package fr.feavy.openai_discord_bot;
 
-import fr.feavy.openai_discord_bot.Settings;
-import fr.feavy.openai_discord_bot.discord.DiscordConversation;
-import fr.feavy.openai_discord_bot.openai.CompletionEngine;
-import fr.feavy.openai_discord_bot.openai.OpenAIClient;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -14,7 +10,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static fr.feavy.openai_discord_bot.openai.OpenAIClient.format;
+import fr.feavy.simpleopenai.OpenAIClient;
+import fr.feavy.simpleopenai.CompletionEngine;
+
+import static fr.feavy.simpleopenai.OpenAIClient.format;
 
 public class DiscordMessageListener extends ListenerAdapter {
     private final OpenAIClient openai = new OpenAIClient(Settings.OPENAI_API_KEY);
@@ -34,8 +33,8 @@ public class DiscordMessageListener extends ListenerAdapter {
         String contentRaw = format(event.getMessage().getContentRaw());
 
         for(CompletionEngine e : CompletionEngine.values()) {
-            if(contentRaw.toLowerCase().endsWith("["+e.name.toLowerCase()+"]")) {
-                contentRaw = contentRaw.substring(0, contentRaw.length() - e.name.length() - 2);
+            if(contentRaw.toLowerCase().endsWith(e.name.toLowerCase())) {
+                contentRaw = contentRaw.substring(0, contentRaw.length() - e.name.length());
                 engine = e;
                 break;
             }
@@ -70,7 +69,7 @@ public class DiscordMessageListener extends ListenerAdapter {
         try {
             DiscordConversation finalConv = conv;
             CompletionEngine finalEngine = engine;
-            openai.complete(conv, engine).thenAccept(completed -> {
+            openai.complete(conv, engine, Settings.MAX_TOKENS).thenAccept(completed -> {
                 try {
                     if (completed == null)
                         return;

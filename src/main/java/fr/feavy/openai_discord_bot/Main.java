@@ -1,6 +1,5 @@
 package fr.feavy.openai_discord_bot;
 
-import fr.feavy.openai_discord_bot.discord.DiscordMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;

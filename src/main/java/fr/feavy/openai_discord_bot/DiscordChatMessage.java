@@ -1,7 +1,8 @@
-package fr.feavy.openai_discord_bot.discord;
+package fr.feavy.openai_discord_bot;
 
-import fr.feavy.openai_discord_bot.openai.ChatMessage;
 import net.dv8tion.jda.api.entities.Message;
+
+import fr.feavy.simpleopenai.ChatMessage;
 
 public class DiscordChatMessage extends ChatMessage {
     public DiscordChatMessage(String role, String content) {
