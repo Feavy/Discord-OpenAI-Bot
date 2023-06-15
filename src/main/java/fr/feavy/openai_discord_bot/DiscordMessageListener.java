@@ -56,7 +56,7 @@ public class DiscordMessageListener extends ListenerAdapter {
             if(conv.hasMessage(referencedMessage)) {
                 // Reply to the user cached conversation
                 conv.setLastMessageAfter(referencedMessage, event.getMessage());
-            } else if(referencedMessage.getAuthor().getId().equals("959430211227750430")) {
+            } else if(referencedMessage.getAuthor().getId().equals("959430211227750430") || referencedMessage.getAuthor().getId().equals("877228808846065665")) {
                 // Reply to OpenAI
                 conv = DiscordConversation.fromMessage(event.getMessage());
             } else {
