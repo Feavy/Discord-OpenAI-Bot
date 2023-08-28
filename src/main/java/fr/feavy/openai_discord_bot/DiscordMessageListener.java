@@ -32,10 +32,12 @@ public class DiscordMessageListener extends ListenerAdapter {
 
         String contentRaw = format(event.getMessage().getContentRaw());
 
-        for(CompletionEngine e : CompletionEngine.values()) {
-            if(contentRaw.toLowerCase().endsWith(e.name.toLowerCase())) {
-                contentRaw = contentRaw.substring(0, contentRaw.length() - e.name.length());
-                engine = e;
+        for(Map.Entry<String, CompletionEngine> e : CompletionEngines.COMMON_ENGINES.entrySet()) {
+            String name = e.getKey();
+            CompletionEngine current = e.getValue();
+            if(contentRaw.toLowerCase().endsWith(name.toLowerCase())) {
+                contentRaw = contentRaw.substring(0, contentRaw.length() - name.length());
+                engine = current;
                 break;
             }
         }
@@ -85,6 +87,10 @@ public class DiscordMessageListener extends ListenerAdapter {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }).exceptionally(e -> {
+                e.printStackTrace();
+                event.getMessage().reply("An error occurred: " + e.getMessage()).queue();
+                return null;
             });
         } catch (Exception e) {
             e.printStackTrace();
