@@ -1,5 +1,6 @@
 package fr.feavy.openai_discord_bot;
 
+import fr.feavy.simpleopenai.ChatMessage;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReference;
 
@@ -35,6 +36,10 @@ public class DiscordConversation extends Conversation {
         // removes all messages after the new one
         messages.subList(index + 2, messages.size()).clear();
         conversation.subList(index + 2, conversation.size()).clear();
+    }
+
+    public boolean containsImage() {
+        return conversation.stream().anyMatch(msg -> !msg.imageUrls.isEmpty());
     }
 
     public static DiscordConversation fromMessage(Message message) {

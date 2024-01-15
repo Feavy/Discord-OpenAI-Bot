@@ -11,6 +11,7 @@ public class CompletionEngines {
     static {
         COMMON_ENGINES.put("gpt3", CompletionEngine.DAVINCI);
         COMMON_ENGINES.put("gpt4", CompletionEngine.GPT4);
+        COMMON_ENGINES.put("vision", CompletionEngine.GPT4_VISION);
         COMMON_ENGINES.put("gpt3+", new CompletionEngine("gpt-3.5-turbo-16k", true));
         COMMON_ENGINES.put("gpt4+", new CompletionEngine("gpt-4-32k", true));
     }

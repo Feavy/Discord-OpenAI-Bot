@@ -20,10 +20,10 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
-    implementation 'net.dv8tion:JDA:5.0.0-beta.9'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.19'
     implementation('org.json:json:20220320')
 
-    implementation 'com.github.Feavy:java-simple-openai:50638f79d3'
+    implementation 'com.github.Feavy:java-simple-openai:main-91c010425d-1'
 }
 
 test {

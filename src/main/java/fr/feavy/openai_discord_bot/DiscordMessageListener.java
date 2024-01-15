@@ -32,12 +32,15 @@ public class DiscordMessageListener extends ListenerAdapter {
 
         String contentRaw = format(event.getMessage().getContentRaw());
 
+        boolean engineOverriden = false;
+
         for(Map.Entry<String, CompletionEngine> e : CompletionEngines.COMMON_ENGINES.entrySet()) {
             String name = e.getKey();
             CompletionEngine current = e.getValue();
             if(contentRaw.toLowerCase().endsWith(name.toLowerCase())) {
                 contentRaw = contentRaw.substring(0, contentRaw.length() - name.length());
                 engine = current;
+                engineOverriden = true;
                 break;
             }
         }
@@ -47,19 +50,21 @@ public class DiscordMessageListener extends ListenerAdapter {
         DiscordConversation conv = cachedConversations.computeIfAbsent(author.getId(), (k -> new DiscordConversation()));
 
         if(referencedMessage == null) {
-            if (contentRaw.startsWith("!ai") || contentRaw.endsWith("??")) {
-                // New conversation
-                conv = new DiscordConversation();
-                conv.addMessage(event.getMessage());
-            }else{
+            if(!contentRaw.startsWith("!ai") && !contentRaw.endsWith("??")) {
                 return;
             }
+            // New conversation
+            conv = new DiscordConversation();
+            conv.addMessage(event.getMessage());
         } else {
             if(conv.hasMessage(referencedMessage)) {
                 // Reply to the user cached conversation
                 conv.setLastMessageAfter(referencedMessage, event.getMessage());
             } else if(referencedMessage.getAuthor().getId().equals("959430211227750430") || referencedMessage.getAuthor().getId().equals("877228808846065665")) {
                 // Reply to OpenAI
+                conv = DiscordConversation.fromMessage(event.getMessage());
+            } else if(contentRaw.startsWith("!ai") || contentRaw.endsWith("??")) {
+                // New conversation
                 conv = DiscordConversation.fromMessage(event.getMessage());
             } else {
                 return;
@@ -68,15 +73,19 @@ public class DiscordMessageListener extends ListenerAdapter {
 
         cachedConversations.put(author.getId(), conv);
 
+        if(conv.containsImage() && !engineOverriden) {
+            engine = CompletionEngine.GPT4_VISION;
+        }
+
         try {
             DiscordConversation finalConv = conv;
-            CompletionEngine finalEngine = engine;
+            boolean isChatBot = engine.isChatBot;
             openai.complete(conv, engine, Settings.MAX_TOKENS).thenAccept(completed -> {
                 try {
                     if (completed == null)
                         return;
 
-                    if(finalEngine.isChatBot) {
+                    if(isChatBot) {
                         event.getMessage().reply(completed).queue(finalConv::addMessage, Throwable::printStackTrace);
                     } else {
                         String previousText = finalConv.toString();
