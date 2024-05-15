@@ -73,7 +73,7 @@ public class DiscordMessageListener extends ListenerAdapter {
 
         cachedConversations.put(author.getId(), conv);
 
-        if(conv.containsImage() && !engineOverriden) {
+        if(conv.containsImage() && !engine.supportsImage && !engineOverriden) {
             engine = CompletionEngine.GPT4_VISION;
         }
 

@@ -15,6 +15,6 @@ public class Main {
 
         api.addEventListener(new DiscordMessageListener());
 
-        System.out.println("OpenAI bot ready. Engine="+Settings.ENGINE);
+        System.out.println("OpenAI bot ready. Engine: "+Settings.ENGINE);
     }
 }
