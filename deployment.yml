@@ -38,4 +38,4 @@ spec:
       imagePullSecrets:
         - name: regcred
       nodeSelector:
-        kubernetes.io/hostname: 'oracle-paris'
+        kubernetes.io/arch: arm64
