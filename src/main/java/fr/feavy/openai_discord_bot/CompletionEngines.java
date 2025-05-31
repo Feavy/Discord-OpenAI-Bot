@@ -25,7 +25,7 @@ public class CompletionEngines {
     public static CompletionEngine get(String name) {
         CompletionEngine engine = COMMON_ENGINES.get(name);
         if(engine == null) {
-            return new CompletionEngine(name, true, true)
+            return new CompletionEngine(name, true, true);
         }
         return engine;
     }
